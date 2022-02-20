@@ -1,16 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <Import Project="$(MSBuildThisFileDirectory)\..\common.props" />
+	<Import Project="$(MSBuildThisFileDirectory)\..\common.props"/>
 
-    <PropertyGroup>
-        <AssemblyName>TypeDecorators</AssemblyName>
-        <PackageVersion>1.0.0</PackageVersion>
-        <Description>Library containing different type decorators and extension methods.</Description>
-    </PropertyGroup>
+	<PropertyGroup>
+		<AssemblyName>TypeDecorators</AssemblyName>
+		<PackageVersion>1.0.0</PackageVersion>
+		<Description>Library containing different type decorators and extension methods.</Description>
+		<IsTrimmable>true</IsTrimmable>
+	</PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	</PropertyGroup>
 
 </Project>
