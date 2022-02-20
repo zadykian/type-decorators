@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using TypeDecorators.Lib.Extensions;
@@ -26,16 +25,16 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	/// </remarks>
 	public override string ToString()
 	{
-		var (value, unit) = TotalBytes switch
+		var (value, unitString) = TotalBytes switch
 		{
-			< 10 * (1UL << 10) => (TotalBytes, Unit.Bytes),
-			< 10 * (1UL << 20) => (TotalBytes / Kilobyte.TotalBytes, Unit.Kilobytes),
-			< 10 * (1UL << 30) => (TotalBytes / Megabyte.TotalBytes, Unit.Megabytes),
-			< 10 * (1UL << 40) => (TotalBytes / Gigabyte.TotalBytes, Unit.Gigabytes),
-			_                  => (TotalBytes / Terabyte.TotalBytes, Unit.Terabytes)
+			< 10 * (1UL << 10) => (TotalBytes,                       "B" ),
+			< 10 * (1UL << 20) => (TotalBytes / Kilobyte.TotalBytes, "kB"),
+			< 10 * (1UL << 30) => (TotalBytes / Megabyte.TotalBytes, "MB"),
+			< 10 * (1UL << 40) => (TotalBytes / Gigabyte.TotalBytes, "GB"),
+			_                  => (TotalBytes / Terabyte.TotalBytes, "TB")
 		};
 
-		return $"{value}{unit.GetDescription()}";
+		return $"{value}{unitString}";
 	}
 
 	#region EqualityMembers
@@ -206,31 +205,26 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 		/// <summary>
 		/// Bytes.
 		/// </summary>
-		[Description("B")]
 		Bytes,
 
 		/// <summary>
 		/// Kilobytes.
 		/// </summary>
-		[Description("kB")]
 		Kilobytes,
 
 		/// <summary>
 		/// Megabytes.
 		/// </summary>
-		[Description("MB")]
 		Megabytes,
 
 		/// <summary>
 		/// Gigabytes.
 		/// </summary>
-		[Description("GB")]
 		Gigabytes,
 
 		/// <summary>
 		/// Terabytes.
 		/// </summary>
-		[Description("TB")]
 		Terabytes
 	}
 }
