@@ -19,6 +19,18 @@ public static class EnumerableExtensions
 	}
 
 	/// <summary>
+	/// Perform action <paramref name="action"/> for each item in <paramref name="enumerable"/>. 
+	/// </summary>
+	public static IEnumerable<T> YieldForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
+	{
+		foreach (var item in enumerable)
+		{
+			action(item);
+			yield return item;
+		}
+	}
+
+	/// <summary>
 	/// Join string values <paramref name="stringValues"/> with separator <paramref name="separator"/>. 
 	/// </summary>
 	public static string JoinBy(this IEnumerable<string> stringValues, string separator)

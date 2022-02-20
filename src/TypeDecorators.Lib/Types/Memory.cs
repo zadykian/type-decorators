@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using TypeDecorators.Lib.Extensions;
 
@@ -18,35 +20,22 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	/// </summary>
 	public ulong TotalBytes { get; }
 
-	/// <summary>
-	/// Normalize memory value based on its' size. 
-	/// </summary>
-	public (ulong Value, Unit Unit) Normalized()
-		=> TotalBytes switch
-		{
-			< 10UL * 1024                      => (TotalBytes, Unit.Bytes),
-			< 10UL * 1024 * 1024               => (TotalBytes / Kilobyte.TotalBytes, Unit.Kilobytes),
-			< 10UL * 1024 * 1024 * 1024        => (TotalBytes / Megabyte.TotalBytes, Unit.Megabytes),
-			< 10UL * 1024 * 1024 * 1024 * 1024 => (TotalBytes / Gigabyte.TotalBytes, Unit.Gigabytes),
-			_                                  => (TotalBytes / Terabyte.TotalBytes, Unit.Terabytes)
-		};
-
 	/// <inheritdoc />
+	/// <remarks>
+	/// Value less than 10kB represented in bytes, value less then 10MB - in kilobytes, and so on.
+	/// </remarks>
 	public override string ToString()
 	{
-		var (value, unit) = Normalized();
-
-		var unitString = unit switch
+		var (value, unit) = TotalBytes switch
 		{
-			Unit.Bytes     => "B",
-			Unit.Kilobytes => "kB",
-			Unit.Megabytes => "MB",
-			Unit.Gigabytes => "GB",
-			Unit.Terabytes => "TB",
-			_ => throw new ArgumentOutOfRangeException()
+			< 10 * (1UL << 10) => (TotalBytes, Unit.Bytes),
+			< 10 * (1UL << 20) => (TotalBytes / Kilobyte.TotalBytes, Unit.Kilobytes),
+			< 10 * (1UL << 30) => (TotalBytes / Megabyte.TotalBytes, Unit.Megabytes),
+			< 10 * (1UL << 40) => (TotalBytes / Gigabyte.TotalBytes, Unit.Gigabytes),
+			_                  => (TotalBytes / Terabyte.TotalBytes, Unit.Terabytes)
 		};
 
-		return $"{value}{unitString}";
+		return $"{value}{unit.GetDescription()}";
 	}
 
 	#region EqualityMembers
@@ -67,7 +56,9 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	int IComparable.CompareTo(object? obj)
 	{
 		if (ReferenceEquals(null, obj)) return 1;
-		return obj is Memory other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(Memory)}");
+		return obj is Memory other
+			? CompareTo(other)
+			: throw new ArgumentException($"Object must be of type {nameof(Memory)}");
 	}
 
 	#endregion
@@ -77,35 +68,66 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	/// <summary>
 	/// Zero memory size - 0B.
 	/// </summary>
-	public static Memory Zero => new(0);
+	public static readonly Memory Zero = new(0);
 
 	/// <summary>
 	/// One byte - 1B.
 	/// </summary>
-	public static Memory Byte => new(1);
+	public static readonly Memory Byte = new(1);
 
 	/// <summary>
 	/// One kilobyte - 1024B.
 	/// </summary>
-	public static Memory Kilobyte => 1024 * Byte;
+	public static readonly Memory Kilobyte = 1024 * Byte;
 
 	/// <summary>
 	/// One megabyte - 1024kB.
 	/// </summary>
-	public static Memory Megabyte => 1024 * Kilobyte;
+	public static readonly Memory Megabyte = 1024 * Kilobyte;
 
 	/// <summary>
 	/// One gigabyte - 1024MB.
 	/// </summary>
-	public static Memory Gigabyte => 1024 * Megabyte;
+	public static readonly Memory Gigabyte = 1024 * Megabyte;
 
 	/// <summary>
 	/// One terabyte - 1024GB.
 	/// </summary>
-	public static Memory Terabyte => 1024 * Gigabyte;
+	public static readonly Memory Terabyte = 1024 * Gigabyte;
 
 	#endregion
 
+	/// <summary>
+	/// Parse string <paramref name="stringToParse"/> to memory value.
+	/// </summary>
+	/// <returns>
+	/// <c>true</c> if <paramref name="stringToParse"/> has valid format, otherwise - <c>false</c>.
+	/// </returns>
+	public static bool TryParse(NonEmptyString stringToParse, [NotNullWhen(returnValue: true)] out Memory? memory)
+	{
+		if (!Regex.IsMatch(stringToParse, @"^[0-9]+\s*(B|kB|MB|GB|TB)$"))
+		{
+			memory = default;
+			return false;
+		}
+
+		var (numericValue, unit) = stringToParse.ParseToTokens();
+
+#pragma warning disable CS8509
+		var multiplier = unit switch
+#pragma warning restore CS8509
+		{
+			"B"  => Byte,
+			"kB" => Kilobyte,
+			"MB" => Megabyte,
+			"GB" => Gigabyte,
+			"TB" => Terabyte
+		};
+
+		memory = numericValue * multiplier;
+		return true;
+	}
+	
 	/// <summary>
 	/// Parse string <paramref name="stringToParse"/> to memory value.
 	/// </summary>
@@ -113,29 +135,9 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	/// Occurs when <paramref name="stringToParse"/> has invalid format.
 	/// </exception>
 	public static Memory Parse(NonEmptyString stringToParse)
-	{
-		ArgumentException InvalidFormat()
-			=> new($"Input string '{stringToParse}' has invalid format.", nameof(stringToParse));
-
-		if (!Regex.IsMatch(stringToParse, @"^[0-9]+\s*(B|kB|MB|GB|TB)$"))
-		{
-			throw InvalidFormat();
-		}
-
-		var (numericValue, unit) = stringToParse.ParseToTokens();
-
-		var multiplier = unit switch
-		{
-			"B"  => Byte,
-			"kB" => Kilobyte,
-			"MB" => Megabyte,
-			"GB" => Gigabyte,
-			"TB" => Terabyte,
-			_    => throw InvalidFormat()
-		};
-
-		return numericValue * multiplier;
-	}
+		=> TryParse(stringToParse, out var memory)
+			? memory.Value
+			: throw new ArgumentException($"Input string '{stringToParse}' has invalid format.", nameof(stringToParse));
 
 	#region Operators
 
@@ -204,26 +206,31 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 		/// <summary>
 		/// Bytes.
 		/// </summary>
+		[Description("B")]
 		Bytes,
 
 		/// <summary>
 		/// Kilobytes.
 		/// </summary>
+		[Description("kB")]
 		Kilobytes,
 
 		/// <summary>
 		/// Megabytes.
 		/// </summary>
+		[Description("MB")]
 		Megabytes,
 
 		/// <summary>
 		/// Gigabytes.
 		/// </summary>
+		[Description("GB")]
 		Gigabytes,
 
 		/// <summary>
 		/// Terabytes.
 		/// </summary>
+		[Description("TB")]
 		Terabytes
 	}
 }
