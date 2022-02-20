@@ -10,6 +10,12 @@ public readonly struct PositiveTimeSpan : IEquatable<PositiveTimeSpan>, IFormatt
 {
 	private readonly TimeSpan underlyingValue;
 
+	/// <param name="underlyingValue">
+	/// Underlying <see cref="TimeSpan"/> value.
+	/// </param>
+	/// <exception cref="ArgumentException">
+	/// <paramref name="underlyingValue"/> is less then <see cref="TimeSpan.Zero"/>.
+	/// </exception>
 	public PositiveTimeSpan(TimeSpan underlyingValue)
 		=> this.underlyingValue = underlyingValue <= TimeSpan.Zero
 			? throw new ArgumentException("Timespan value must be positive.", nameof(underlyingValue))

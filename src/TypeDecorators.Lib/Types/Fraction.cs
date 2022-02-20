@@ -11,6 +11,12 @@ public readonly struct Fraction : IEquatable<Fraction>, IFormattable
 {
 	private readonly decimal underlyingValue;
 
+	/// <param name="underlyingValue">
+	/// Actual fraction value.
+	/// </param>
+	/// <exception cref="ArgumentException">
+	/// <paramref name="underlyingValue"/> does not belong to range [0.0 .. 1.0].
+	/// </exception>
 	public Fraction(decimal underlyingValue)
 		=> this.underlyingValue = underlyingValue.InRangeBetween(decimal.Zero, decimal.One)
 			? underlyingValue

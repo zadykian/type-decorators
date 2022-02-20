@@ -5,6 +5,15 @@ namespace TypeDecorators.Lib.Types;
 /// </summary>
 public readonly struct Range<T> where T : IComparable<T>
 {
+	/// <param name="leftBound">
+	/// Left bound of range.
+	/// </param>
+	/// <param name="rightBound">
+	/// Right bound of range.
+	/// </param>
+	/// <exception cref="ArgumentException">
+	/// <paramref name="leftBound"/> larger then <paramref name="rightBound"/>.
+	/// </exception>
 	public Range(T leftBound, T rightBound)
 	{
 		if (leftBound.CompareTo(rightBound) > 0)

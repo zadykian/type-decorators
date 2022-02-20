@@ -8,6 +8,9 @@ namespace TypeDecorators.Lib.Types;
 /// </summary>
 public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, IComparable
 {
+	/// <param name="totalBytes">
+	/// Memory value in bytes.
+	/// </param>
 	public Memory(ulong totalBytes) => TotalBytes = totalBytes;
 
 	/// <summary>
