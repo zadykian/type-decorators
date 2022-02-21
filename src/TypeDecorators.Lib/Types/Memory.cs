@@ -97,6 +97,17 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	#endregion
 
 	/// <summary>
+	/// Create new instance of <see cref="Memory"/> with specified value of <see cref="TotalBytes"/>.
+	/// </summary>
+	public static Memory Bytes(ulong totalBytes) => new(totalBytes);
+
+	/// <inheritdoc cref="Bytes(ulong)"/>
+	public static Memory Bytes(int totalBytes)
+		=> totalBytes >= 0
+			? Bytes((ulong) totalBytes)
+			: throw new ArgumentException("Total bytes value must be non-negative.", nameof(totalBytes));
+
+	/// <summary>
 	/// Parse string <paramref name="stringToParse"/> to memory value.
 	/// </summary>
 	/// <returns>
