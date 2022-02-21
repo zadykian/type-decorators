@@ -4,7 +4,7 @@
 
 	<PropertyGroup>
 		<PackageId>TypeDecorators</PackageId>
-		<PackageVersion>1.0.0</PackageVersion>
+		<PackageVersion>1.0.1</PackageVersion>
 		<Description>Library containing different type decorators and extension methods.</Description>
 		<IsTrimmable>true</IsTrimmable>
 	</PropertyGroup>
@@ -21,6 +21,10 @@
 			<Pack>true</Pack>
 			<PackagePath>build\net6.0\TypeDecorators.props</PackagePath>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
 	</ItemGroup>
 
 </Project>
