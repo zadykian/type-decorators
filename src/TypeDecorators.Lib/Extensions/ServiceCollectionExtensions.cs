@@ -38,7 +38,7 @@ public static class ServiceCollectionExtensions
 		var options = new MultipleContractsOptions<T>();
 		config(options);
 
-		if (services.All(descriptor => descriptor.ImplementationType != typeof(T)))
+		if (services.All(descriptor => descriptor.ServiceType != typeof(T)))
 		{
 			services.Add(new ServiceDescriptor(typeof(T), typeof(T), lifetime));
 		}
