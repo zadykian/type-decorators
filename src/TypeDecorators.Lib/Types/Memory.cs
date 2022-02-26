@@ -97,17 +97,6 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	#endregion
 
 	/// <summary>
-	/// Create new instance of <see cref="Memory"/> with specified value of <see cref="TotalBytes"/>.
-	/// </summary>
-	public static Memory Bytes(ulong totalBytes) => new(totalBytes);
-
-	/// <inheritdoc cref="Bytes(ulong)"/>
-	public static Memory Bytes(int totalBytes)
-		=> totalBytes >= 0
-			? Bytes((ulong) totalBytes)
-			: throw new ArgumentException("Total bytes value must be non-negative.", nameof(totalBytes));
-
-	/// <summary>
 	/// Parse string <paramref name="stringToParse"/> to memory value.
 	/// </summary>
 	/// <returns>
@@ -184,6 +173,12 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	public static Memory operator *(ulong coefficient, Memory memory) => memory * coefficient;
 
 	/// <inheritdoc cref="op_Multiply(Memory,ulong)"/>
+	public static Memory operator *(Memory memory, int coefficient) => new(memory.TotalBytes * (ulong) coefficient);
+
+	/// <inheritdoc cref="op_Multiply(Memory,ulong)"/>
+	public static Memory operator *(int coefficient, Memory memory) => memory * coefficient;
+
+	/// <inheritdoc cref="op_Multiply(Memory,ulong)"/>
 	public static Memory operator *(Memory memory, double coefficient) => new((ulong) (memory.TotalBytes * coefficient));
 
 	/// <inheritdoc cref="op_Multiply(Memory,ulong)"/>
@@ -205,6 +200,9 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 
 	/// <inheritdoc cref="op_Division(Memory,ulong)"/>
 	public static Memory operator /(Memory memory, decimal coefficient) => new((ulong) (memory.TotalBytes / coefficient));
+
+	/// <inheritdoc cref="op_Division(Memory,ulong)"/>
+	public static double operator /(Memory left, Memory right) => (double) left.TotalBytes / right.TotalBytes;
 
 	#endregion
 

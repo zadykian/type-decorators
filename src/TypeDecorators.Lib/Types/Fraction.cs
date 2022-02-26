@@ -18,7 +18,7 @@ public readonly struct Fraction : IEquatable<Fraction>, IFormattable
 	/// <paramref name="underlyingValue"/> does not belong to range [0.0 .. 1.0].
 	/// </exception>
 	public Fraction(decimal underlyingValue)
-		=> this.underlyingValue = underlyingValue.InRangeBetween(decimal.Zero, decimal.One)
+		=> this.underlyingValue = underlyingValue.Between(decimal.Zero, decimal.One)
 			? underlyingValue
 			: throw new ArgumentException("Value must be in range [0.0 .. 1.0].", nameof(underlyingValue));
 
@@ -36,7 +36,7 @@ public readonly struct Fraction : IEquatable<Fraction>, IFormattable
 		[NotNullWhen(returnValue: true)] out Fraction? fraction)
 	{
 		if (!decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out var decimalValue)
-		    || !decimalValue.InRangeBetween(decimal.Zero, decimal.One))
+		    || !decimalValue.Between(decimal.Zero, decimal.One))
 		{
 			fraction = null;
 			return false;
