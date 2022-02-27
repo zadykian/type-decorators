@@ -28,7 +28,7 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 		var (value, unitString) = TotalBytes switch
 		{
 			< 10 * (1UL << 10) => (TotalBytes,                       "B" ),
-			< 10 * (1UL << 20) => (TotalBytes / Kilobyte.TotalBytes, "kB"),
+			< 10 * (1UL << 20) => (TotalBytes / Kilobyte.TotalBytes, "KB"),
 			< 10 * (1UL << 30) => (TotalBytes / Megabyte.TotalBytes, "MB"),
 			< 10 * (1UL << 40) => (TotalBytes / Gigabyte.TotalBytes, "GB"),
 			_                  => (TotalBytes / Terabyte.TotalBytes, "TB")
@@ -80,7 +80,7 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	public static readonly Memory Kilobyte = 1024 * Byte;
 
 	/// <summary>
-	/// One megabyte - 1024kB.
+	/// One megabyte - 1024KB.
 	/// </summary>
 	public static readonly Memory Megabyte = 1024 * Kilobyte;
 
@@ -104,7 +104,7 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 	/// </returns>
 	public static bool TryParse(NonEmptyString stringToParse, [NotNullWhen(returnValue: true)] out Memory? memory)
 	{
-		if (!Regex.IsMatch(stringToParse, @"^[0-9]+\s*(B|kB|MB|GB|TB)$"))
+		if (!Regex.IsMatch(stringToParse, @"^[0-9]+\s*(B|KB|MB|GB|TB)$"))
 		{
 			memory = default;
 			return false;
@@ -117,7 +117,7 @@ public readonly struct Memory : IEquatable<Memory>, IComparable<Memory>, ICompar
 #pragma warning restore CS8509
 		{
 			"B"  => Byte,
-			"kB" => Kilobyte,
+			"KB" => Kilobyte,
 			"MB" => Megabyte,
 			"GB" => Gigabyte,
 			"TB" => Terabyte
