@@ -4,7 +4,7 @@
 
 	<PropertyGroup>
 		<PackageId>TypeDecorators</PackageId>
-		<PackageVersion>1.0.2</PackageVersion>
+		<PackageVersion>1.1.0</PackageVersion>
 		<Description>Library containing different type decorators and extension methods.</Description>
 		<IsTrimmable>true</IsTrimmable>
 	</PropertyGroup>
